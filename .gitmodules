@@ -1,0 +1,6 @@
+[submodule "ndt-e2e-clientworker"]
+	path = ndt-e2e-clientworker
+	url = https://github.com/m-lab/ndt-e2e-clientworker.git
+[submodule "testmaster/ndt_e2e_client"]
+	path = testmaster/ndt_e2e_client
+	url = https://github.com/m-lab/ndt-e2e-clientworker.git
