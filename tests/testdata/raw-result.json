@@ -1,0 +1,18 @@
+{
+  "browser": "chrome", 
+  "browser_version": "50.0.2661.86", 
+  "c2s_end_time": "2016-05-24T16:55:46.944071Z", 
+  "c2s_start_time": "2016-05-24T16:55:34.074628Z", 
+  "c2s_throughput": 0.938, 
+  "client": "ndt_js", 
+  "client_version": null, 
+  "end_time": "2016-05-24T16:55:58.756734Z", 
+  "errors": [], 
+  "latency": 564.0, 
+  "os": "OSX", 
+  "os_version": "10.11.3", 
+  "s2c_end_time": "2016-05-24T16:55:58.324334Z", 
+  "s2c_start_time": "2016-05-24T16:55:46.944247Z", 
+  "s2c_throughput": 1.01, 
+  "start_time": "2016-05-24T16:55:22.677309Z"
+}
