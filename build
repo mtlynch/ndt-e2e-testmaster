@@ -5,14 +5,16 @@
 # Run unit tests and calculate code coverage.
 coverage run \
   --source testmaster \
-  -m unittest discover &&
+  --omit "testmaster/ndt_e2e_clientworker/*" \
+  -m unittest discover -s tests &&
 # Check that source has correct formatting.
 yapf \
   --diff \
   --recursive \
   --style google \
   ./ \
-  --exclude "./third_party/*" &&
+  --exclude "./third_party/*" \
+  --exclude "./testmaster/ndt_e2e_clientworker/*" &&
 # Run static analysis for Python bugs/cruft.
 pyflakes testmaster/*.py tests/*.py &&
 # Check docstrings for style consistency.
