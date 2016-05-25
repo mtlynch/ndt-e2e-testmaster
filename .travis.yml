@@ -1,0 +1,14 @@
+sudo: false
+language: python
+python:
+  - "2.7"
+install:
+    # Requirements needed to build checks
+    - pip install -r dev_requirements.txt
+    # Requirements needed for Travis CI
+    - pip install coveralls
+script:
+    ./build
+after_success:
+    coveralls
+
