@@ -26,7 +26,7 @@ def parse_files(result_filenames):
     within specified packages are ignored.
 
     Note that if multiple files in the list have the same basename, but
-    different contents results are undefined.
+    different contents, results are undefined.
 
     Args:
         result_filenames: A list of filenames to parse for results. These may
@@ -39,38 +39,6 @@ def parse_files(result_filenames):
     """
     result_files = _read_result_files(result_filenames)
     return _decode_results(result_files)
-
-
-def _is_raw_result(filename):
-    return os.path.splitext(filename)[1] == '.json'
-
-
-def _is_result_package(filename):
-    return zipfile.is_zipfile(filename)
-
-
-def _read_results_from_package(result_package_filename):
-    """Loads the raw contents of each result file in a result package.
-
-    Opens a result package file and, for each raw result file in the package,
-    reads the raw, decompressed contents of the file into memory. Any filenames
-    in the package that are not result files are ignored.
-
-    Args:
-        result_package_filename: Filename of result package from which to read
-            file contents.
-
-    Returns:
-        A dictionary where each key is a file basename and the value is a string
-        containing the contents of the corresponding file.
-    """
-    results = {}
-    with zipfile.ZipFile(result_package_filename) as result_package:
-        for filename in result_package.namelist():
-            if not _is_raw_result(filename):
-                continue
-            results[os.path.basename(filename)] = result_package.read(filename)
-    return results
 
 
 def _read_result_files(result_filenames):
@@ -99,6 +67,38 @@ def _read_result_files(result_filenames):
         elif _is_result_package(filename):
             result_files.update(_read_results_from_package(filename))
     return result_files
+
+
+def _read_results_from_package(result_package_filename):
+    """Loads the raw contents of each result file in a result package.
+
+    Opens a result package file and, for each raw result file in the package,
+    reads the raw, decompressed contents of the file into memory. Any filenames
+    in the package that are not result files are ignored.
+
+    Args:
+        result_package_filename: Filename of result package from which to read
+            file contents.
+
+    Returns:
+        A dictionary where each key is a file basename and the value is a string
+        containing the contents of the corresponding file.
+    """
+    results = {}
+    with zipfile.ZipFile(result_package_filename) as result_package:
+        for filename in result_package.namelist():
+            if not _is_raw_result(filename):
+                continue
+            results[os.path.basename(filename)] = result_package.read(filename)
+    return results
+
+
+def _is_raw_result(filename):
+    return os.path.splitext(filename)[1] == '.json'
+
+
+def _is_result_package(filename):
+    return zipfile.is_zipfile(filename)
 
 
 def _decode_results(result_files):
