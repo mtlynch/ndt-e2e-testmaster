@@ -1,5 +1,5 @@
-dateutil
 pyflakes==1.0.0
 pylint==1.5.5
+python-dateutil
 pytz
 yapf==0.8.2
