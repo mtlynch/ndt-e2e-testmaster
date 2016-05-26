@@ -1,4 +1,3 @@
-dateutil
 pyflakes==1.0.0
 pylint==1.5.5
 python-dateutil
