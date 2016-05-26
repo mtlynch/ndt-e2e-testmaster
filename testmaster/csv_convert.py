@@ -72,7 +72,7 @@ def ndt_results_to_csv(results):
 
 def _format_float(value):
     if value is None:
-        return None
+        return ''
     return '%.1f' % value
 
 

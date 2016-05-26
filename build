@@ -2,11 +2,14 @@
 #
 # Build steps to validate testmaster.
 
+# Exit build script on first failure
+set -e
+
 # Run unit tests and calculate code coverage.
 coverage run \
   --source testmaster \
   --omit "testmaster/ndt_e2e_clientworker/*" \
-  -m unittest discover -s tests &&
+  -m unittest discover -s tests
 # Check that source has correct formatting.
 yapf \
   --diff \
@@ -14,9 +17,9 @@ yapf \
   --style google \
   ./ \
   --exclude "./third_party/*" \
-  --exclude "./testmaster/ndt_e2e_clientworker/*" &&
+  --exclude "./testmaster/ndt_e2e_clientworker/*"
 # Run static analysis for Python bugs/cruft.
-pyflakes testmaster/*.py tests/*.py &&
+pyflakes testmaster/*.py tests/*.py
 # Check docstrings for style consistency.
 PYTHONPATH=$PYTHONPATH:$(pwd)/third_party/docstringchecker \
   pylint --reports=n testmaster tests
