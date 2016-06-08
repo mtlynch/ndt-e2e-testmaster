@@ -16,6 +16,8 @@ import csv
 import io
 import operator
 
+import result_metrics
+
 
 def ndt_results_to_csv(results):
     """Converts a dictionary of NdtResult objects to a CSV summary.
@@ -51,22 +53,18 @@ def ndt_results_to_csv(results):
     # Sort results so that rows are in ascending order of filename.
     sorted_results = sorted(results.items(), key=operator.itemgetter(0))
     for filename, result in sorted_results:
-        row = {
+        csv_writer.writerow({
             'filename': filename,
-            'total_duration': _format_float(_calculate_duration(result)),
+            'total_duration':
+            _format_float(result_metrics.total_duration(result)),
             'c2s_throughput': _format_float(result.c2s_result.throughput),
+            'c2s_duration': _format_float(result_metrics.c2s_duration(result)),
             's2c_throughput': _format_float(result.s2c_result.throughput),
+            's2c_duration': _format_float(result_metrics.s2c_duration(result)),
             'latency': _format_float(result.latency),
             'error': 1 if len(result.errors) > 0 else 0,
             'error_list': _join_errors(result.errors),
-        }
-        if result.c2s_result.end_time and result.c2s_result.start_time:
-            row['c2s_duration'] = _format_float(_calculate_duration(
-                result.c2s_result))
-        if result.s2c_result.end_time and result.s2c_result.start_time:
-            row['s2c_duration'] = _format_float(_calculate_duration(
-                result.s2c_result))
-        csv_writer.writerow(row)
+        })
     return output.getvalue()
 
 
@@ -74,19 +72,6 @@ def _format_float(value):
     if value is None:
         return ''
     return '%.1f' % value
-
-
-def _calculate_duration(event):
-    """Calculates the duration of an event in seconds.
-
-    Args:
-        event: An object that has start_time and end_time properties that
-            return datetime objects.
-
-    Returns:
-        The total duration of event in seconds.
-    """
-    return (event.end_time - event.start_time).total_seconds()
 
 
 def _join_errors(errors):
