@@ -28,9 +28,7 @@ class ResultMetricsTest(unittest.TestCase):
         result = results.NdtResult(
             start_time=datetime.datetime(2016, 6, 8, 12, 0, 0, 0, pytz.utc),
             end_time=datetime.datetime(2016, 6, 8, 12, 0, 35, 700000, pytz.utc))
-        self.assertAlmostEqual(35.7,
-                               result_metrics.total_duration(result),
-                               places=1)
+        self.assertAlmostEqual(35.7, result_metrics.total_duration(result))
 
     def test_total_duration_is_None_on_incomplete_result(self):
         result = results.NdtResult(
@@ -42,9 +40,7 @@ class ResultMetricsTest(unittest.TestCase):
             start_time=datetime.datetime(2016, 6, 8, 12, 0, 0, 0, pytz.utc),
             end_time=datetime.datetime(2016, 6, 8, 12, 0, 11, 927345,
                                        pytz.utc)))
-        self.assertAlmostEqual(11.9,
-                               result_metrics.c2s_duration(result),
-                               places=1)
+        self.assertAlmostEqual(11.927345, result_metrics.c2s_duration(result))
 
     def test_c2s_duration_is_None_for_incomplete_c2s_test(self):
         result = results.NdtResult(c2s_result=results.NdtSingleTestResult(
@@ -56,9 +52,7 @@ class ResultMetricsTest(unittest.TestCase):
             start_time=datetime.datetime(2016, 6, 8, 12, 0, 0, 0, pytz.utc),
             end_time=datetime.datetime(2016, 6, 8, 12, 0, 11, 927345,
                                        pytz.utc)))
-        self.assertAlmostEqual(11.9,
-                               result_metrics.s2c_duration(result),
-                               places=1)
+        self.assertAlmostEqual(11.927345, result_metrics.s2c_duration(result))
 
     def test_s2c_duration_is_None_for_incomplete_s2c_test(self):
         result = results.NdtResult(s2c_result=results.NdtSingleTestResult(
