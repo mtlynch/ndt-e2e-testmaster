@@ -24,3 +24,24 @@ python testmaster/json_to_csv.py --pattern "ndt-results/*" > results.csv
 
 Where `ndt-results` is a folder containing raw JSON results, zips of results, or
 both.
+
+### Result Aggregate Statistics Calculator
+
+The aggregate statistics calculator calculates the aggregate statistics of each
+metric in the NDT results.
+
+##### Print metric statistics in simple text format
+
+```bash
+python testmaster/calculate_statistics.py \
+  --pattern "ndt-results/*" \
+  --format=simple
+```
+
+##### Write metric statistics in CSV format
+
+```bash
+python testmaster/calculate_statistics.py \
+  --pattern "ndt-results/*" \
+  --format=csv > results.csv
+```

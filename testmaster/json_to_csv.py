@@ -26,7 +26,11 @@ import read_results
 
 
 def main(args):
-    results = read_results.parse_files(glob.glob(args.pattern))
+    matching_files = glob.glob(args.pattern)
+    if not matching_files:
+        print 'No matching files'
+        return
+    results = read_results.parse_files(matching_files)
     print csv_convert.ndt_results_to_csv(results)
 
 
