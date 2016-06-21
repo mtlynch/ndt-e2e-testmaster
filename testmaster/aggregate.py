@@ -16,6 +16,10 @@ import collections
 
 import numpy
 
+Aggregates = collections.namedtuple('Aggregates',
+                                    ['minimum', 'maximum', 'mean', 'median',
+                                     'standard_deviation', 'sample_count'])
+
 
 def aggregate(values):
     """Calculates aggregate statistics for a set of numeric values.
@@ -29,9 +33,6 @@ def aggregate(values):
         specified values.
     """
     samples = [x for x in values if x is not None]
-    Aggregates = collections.namedtuple('Aggregates',
-                                        ['minimum', 'maximum', 'mean', 'median',
-                                         'standard_deviation', 'sample_count'])
     return Aggregates(minimum=min(samples),
                       maximum=max(samples),
                       mean=numpy.mean(samples),
