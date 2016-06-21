@@ -12,44 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import collections
+
 import numpy
-
-
-class Aggregates(object):
-    """A summary of aggregate statistics for a set of values."""
-
-    def __init__(self, minimum, maximum, mean, median, standard_deviation,
-                 sample_count):
-        self._minimum = minimum
-        self._maximum = maximum
-        self._mean = mean
-        self._median = median
-        self._standard_deviation = standard_deviation
-        self._sample_count = sample_count
-
-    @property
-    def minimum(self):
-        return self._minimum
-
-    @property
-    def maximum(self):
-        return self._maximum
-
-    @property
-    def mean(self):
-        return self._mean
-
-    @property
-    def median(self):
-        return self._median
-
-    @property
-    def standard_deviation(self):
-        return self._standard_deviation
-
-    @property
-    def sample_count(self):
-        return self._sample_count
 
 
 def aggregate(values):
@@ -60,10 +25,13 @@ def aggregate(values):
             statistics. Entries in the list that are None are ignored.
 
     Returns:
-        An Aggregates instance representing aggregate statistics for the
+        An Aggregates named tuple representing aggregate statistics for the
         specified values.
     """
     samples = [x for x in values if x is not None]
+    Aggregates = collections.namedtuple('Aggregates',
+                                        ['minimum', 'maximum', 'mean', 'median',
+                                         'standard_deviation', 'sample_count'])
     return Aggregates(minimum=min(samples),
                       maximum=max(samples),
                       mean=numpy.mean(samples),
