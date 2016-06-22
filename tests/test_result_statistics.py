@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from __future__ import absolute_import
+import collections
 import datetime
 import unittest
 
@@ -60,6 +61,22 @@ RESULTS_C = results.NdtResult(
         throughput=47.6),
     latency=103.5)
 
+# Simplified version of the aggregate.Aggregate named tuple that has only a
+# total field.
+FakeAggregates = collections.namedtuple('FakeAggregates', 'total')
+
+
+def fake_aggregate(values):
+    """Fake implementation of aggregate that just calculates sums.
+
+    Fake implementation of the aggregate.aggregate function that returns a
+    simplified.
+
+    Returns:
+        An instance of FakeAggregates, populated with the sum total of values.
+    """
+    return FakeAggregates(total=sum(values))
+
 
 class CalculateStatisticsTest(unittest.TestCase):
 
@@ -69,63 +86,28 @@ class CalculateStatisticsTest(unittest.TestCase):
         self.addCleanup(aggregate_patcher.stop)
         aggregate_patcher.start()
         self.mock_aggregate = result_statistics.aggregate.aggregate
-        # Mock out the return values of the calls to aggregate.aggregate.
-        # Caveat: Defining the side effect in this way is FLAKY in that we
-        # assume a particular ordering of calls to aggregate.aggregate, even
-        # though this is an implementation detail of calculate_statistics. We
-        # are accepting this flakiness to avoid the added complexity of
-        # creating a mock aggregate function that is order-agnostic.
-        self.mock_aggregate.side_effect = [
-            'mock total duration', 'mock c2s duration', 'mock s2c duration',
-            'mock c2s throughput', 'mock s2c throughput', 'mock latency'
-        ]
+        self.mock_aggregate.side_effect = fake_aggregate
 
-    def assertMockAggregateHasCalls(self, total_duration, c2s_duration,
-                                    s2c_duration, c2s_throughput,
-                                    s2c_throughput, latency):
-        """Verify that the mocked out aggregate function was called correctly.
-
-        Verify that the calculate_statistics calls the aggregate.aggregate
-        function received the expected values to aggregate for each NDT metric.
-        """
-        self.mock_aggregate.assert_has_calls(
-            [
-                mock.call(total_duration),
-                mock.call(c2s_duration),
-                mock.call(s2c_duration),
-                mock.call(c2s_throughput),
-                mock.call(s2c_throughput),
-                mock.call(latency),
-            ],
-            any_order=True)
-
-    def test_calculate_aggregates_for_single_result(self):
+    def test_calculate_statistics_for_single_result(self):
         statistics = result_statistics.calculate_statistics([RESULTS_A])
-        self.assertMockAggregateHasCalls(total_duration=[23.0],
-                                         c2s_duration=[10.0],
-                                         s2c_duration=[10.5],
-                                         c2s_throughput=[1.0],
-                                         s2c_throughput=[5.0],
-                                         latency=[10.0])
-        self.assertEqual('mock total duration', statistics.total_duration)
-        self.assertEqual('mock c2s duration', statistics.c2s_duration)
-        self.assertEqual('mock s2c duration', statistics.s2c_duration)
-        self.assertEqual('mock c2s throughput', statistics.c2s_throughput)
-        self.assertEqual('mock s2c throughput', statistics.s2c_throughput)
-        self.assertEqual('mock latency', statistics.latency)
+        self.assertAlmostEqual(23.0, statistics.total_duration.total)
+        self.assertAlmostEqual(10.0, statistics.c2s_duration.total)
+        self.assertAlmostEqual(10.5, statistics.s2c_duration.total)
+        self.assertAlmostEqual(1.0, statistics.c2s_throughput.total)
+        self.assertAlmostEqual(5.0, statistics.s2c_throughput.total)
+        self.assertAlmostEqual(10.0, statistics.latency.total)
 
-    def test_calculate_aggregates_for_three_results(self):
+    def test_calculate_statistics_for_three_results(self):
         statistics = result_statistics.calculate_statistics(
             [RESULTS_A, RESULTS_B, RESULTS_C])
-        self.assertMockAggregateHasCalls(total_duration=[23.0, 25.0, 26.0],
-                                         c2s_duration=[10.0, 12.0, 11.0],
-                                         s2c_duration=[10.5, 10.0, 11.5],
-                                         c2s_throughput=[1.0, 97.6, 55.3],
-                                         s2c_throughput=[5.0, 108.2, 47.6],
-                                         latency=[10.0, 3.0, 103.5])
-        self.assertEqual('mock total duration', statistics.total_duration)
-        self.assertEqual('mock c2s duration', statistics.c2s_duration)
-        self.assertEqual('mock s2c duration', statistics.s2c_duration)
-        self.assertEqual('mock c2s throughput', statistics.c2s_throughput)
-        self.assertEqual('mock s2c throughput', statistics.s2c_throughput)
-        self.assertEqual('mock latency', statistics.latency)
+        self.assertAlmostEqual(23.0 + 25.0 + 26.0,
+                               statistics.total_duration.total)
+        self.assertAlmostEqual(10.0 + 12.0 + 11.0,
+                               statistics.c2s_duration.total)
+        self.assertAlmostEqual(10.5 + 10.0 + 11.5,
+                               statistics.s2c_duration.total)
+        self.assertAlmostEqual(1.0 + 97.6 + 55.3,
+                               statistics.c2s_throughput.total)
+        self.assertAlmostEqual(5.0 + 108.2 + 47.6,
+                               statistics.s2c_throughput.total)
+        self.assertAlmostEqual(10.0 + 3.0 + 103.5, statistics.latency.total)
