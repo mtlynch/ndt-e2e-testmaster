@@ -62,20 +62,20 @@ RESULTS_C = results.NdtResult(
     latency=103.5)
 
 # Simplified version of the aggregate.Aggregate named tuple that has only a
-# total field.
-FakeAggregates = collections.namedtuple('FakeAggregates', 'total')
+# sum field.
+FakeAggregates = collections.namedtuple('FakeAggregates', 'sum')
 
 
 def fake_aggregate(values):
     """Fake implementation of aggregate that just calculates sums.
 
     Fake implementation of the aggregate.aggregate function that returns a
-    simplified.
+    simplified aggregate object containing only a sum field.
 
     Returns:
-        An instance of FakeAggregates, populated with the sum total of values.
+        An instance of FakeAggregates, populated with the sum sum of values.
     """
-    return FakeAggregates(total=sum(values))
+    return FakeAggregates(sum=sum(values))
 
 
 class CalculateStatisticsTest(unittest.TestCase):
@@ -90,24 +90,21 @@ class CalculateStatisticsTest(unittest.TestCase):
 
     def test_calculate_statistics_for_single_result(self):
         statistics = result_statistics.calculate_statistics([RESULTS_A])
-        self.assertAlmostEqual(23.0, statistics.total_duration.total)
-        self.assertAlmostEqual(10.0, statistics.c2s_duration.total)
-        self.assertAlmostEqual(10.5, statistics.s2c_duration.total)
-        self.assertAlmostEqual(1.0, statistics.c2s_throughput.total)
-        self.assertAlmostEqual(5.0, statistics.s2c_throughput.total)
-        self.assertAlmostEqual(10.0, statistics.latency.total)
+        self.assertAlmostEqual(23.0, statistics.total_duration.sum)
+        self.assertAlmostEqual(10.0, statistics.c2s_duration.sum)
+        self.assertAlmostEqual(10.5, statistics.s2c_duration.sum)
+        self.assertAlmostEqual(1.0, statistics.c2s_throughput.sum)
+        self.assertAlmostEqual(5.0, statistics.s2c_throughput.sum)
+        self.assertAlmostEqual(10.0, statistics.latency.sum)
 
     def test_calculate_statistics_for_three_results(self):
         statistics = result_statistics.calculate_statistics(
             [RESULTS_A, RESULTS_B, RESULTS_C])
         self.assertAlmostEqual(23.0 + 25.0 + 26.0,
-                               statistics.total_duration.total)
-        self.assertAlmostEqual(10.0 + 12.0 + 11.0,
-                               statistics.c2s_duration.total)
-        self.assertAlmostEqual(10.5 + 10.0 + 11.5,
-                               statistics.s2c_duration.total)
-        self.assertAlmostEqual(1.0 + 97.6 + 55.3,
-                               statistics.c2s_throughput.total)
+                               statistics.total_duration.sum)
+        self.assertAlmostEqual(10.0 + 12.0 + 11.0, statistics.c2s_duration.sum)
+        self.assertAlmostEqual(10.5 + 10.0 + 11.5, statistics.s2c_duration.sum)
+        self.assertAlmostEqual(1.0 + 97.6 + 55.3, statistics.c2s_throughput.sum)
         self.assertAlmostEqual(5.0 + 108.2 + 47.6,
-                               statistics.s2c_throughput.total)
-        self.assertAlmostEqual(10.0 + 3.0 + 103.5, statistics.latency.total)
+                               statistics.s2c_throughput.sum)
+        self.assertAlmostEqual(10.0 + 3.0 + 103.5, statistics.latency.sum)
