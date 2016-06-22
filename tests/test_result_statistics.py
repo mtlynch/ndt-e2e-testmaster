@@ -73,7 +73,7 @@ def fake_aggregate(values):
     simplified aggregate object containing only a sum field.
 
     Returns:
-        An instance of FakeAggregates, populated with the sum sum of values.
+        An instance of FakeAggregates, populated with the sum of values.
     """
     return FakeAggregates(sum=sum(values))
 
