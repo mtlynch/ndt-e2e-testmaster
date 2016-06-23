@@ -20,13 +20,18 @@ Given a pattern of files, finds the NDT result files (JSON) or result packages
 
 import argparse
 import glob
+import logging
 
 import csv_convert
 import read_results
 
 
 def main(args):
-    results = read_results.parse_files(glob.glob(args.pattern))
+    matching_files = glob.glob(args.pattern)
+    if not matching_files:
+        logging.error('No files matched pattern %s', args.pattern)
+        return
+    results = read_results.parse_files(matching_files)
     print csv_convert.ndt_results_to_csv(results)
 
 
